@@ -72,7 +72,7 @@ ${text.trim()}`;
           'X-Title': 'Humanize AI', // Optional
         },
         body: JSON.stringify({
-          model: 'qwen/qwen3-next-80b-a3b-instruct:free',
+          model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.7 + intensity / 400,
           top_p: 0.95,
