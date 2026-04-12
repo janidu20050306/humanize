@@ -55,7 +55,7 @@ ${text.trim()}`;
     
     // Using chat.send for simplicity as per user snippet spirit
     const completion = await openrouter.chat.completions.create({
-      model: 'qwen/qwen3-next-80b-a3b-instruct:free',
+      model: 'nvidia/nemotron-3-super-120b-a12b:free',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7 + intensity / 400,
     });
