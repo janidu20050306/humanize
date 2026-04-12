@@ -1,0 +1,47 @@
+# HumanizeAI — robots.txt
+# Allow all major search engines
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /.env
+Disallow: /private/
+
+# Allow Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Allow Bing
+User-agent: Bingbot
+Allow: /
+
+# Allow AI engines (GEO — Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Block known bad/scraper bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap location
+Sitemap: https://huumanize.vercel.app/sitemap.xml

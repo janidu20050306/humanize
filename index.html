@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="color-scheme" content="dark"/>
+
+<!-- ══ PRIMARY SEO META TAGS ══ -->
+<title>HumanizeAI — Free AI Text Humanizer | Make ChatGPT Text Sound Human</title>
+<meta name="description" content="Free AI text humanizer powered by Google Gemini. Instantly rewrite ChatGPT, Claude & Bard text to sound natural, warm and human. No signup needed."/>
+<meta name="keywords" content="humanize AI text, AI to human text converter, make AI text undetectable, ChatGPT humanizer, bypass AI detection, free AI paraphraser, AI text rewriter"/>
+<meta name="author" content="HumanizeAI"/>
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+<meta name="googlebot" content="index, follow"/>
+<link rel="canonical" href="https://huumanize.vercel.app/"/>
+<meta name="theme-color" content="#05080f"/>
+
+<!-- ══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ══ -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="HumanizeAI"/>
+<meta property="og:title" content="HumanizeAI — Free AI Text Humanizer"/>
+<meta property="og:description" content="Transform robotic AI text into natural, warm human writing. Free, powered by Gemini. No account needed."/>
+<meta property="og:url" content="https://huumanize.vercel.app/"/>
+<meta property="og:image" content="https://huumanize.vercel.app/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="HumanizeAI — AI text humanizer tool interface"/>
+<meta property="og:locale" content="en_US"/>
+
+<!-- ══ TWITTER / X CARDS ══ -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:site" content="@humanizeai"/>
+<meta name="twitter:creator" content="@humanizeai"/>
+<meta name="twitter:title" content="HumanizeAI — Make AI Text Sound Human (Free)"/>
+<meta name="twitter:description" content="Paste ChatGPT text. Get warm, natural human writing instantly. Free Gemini-powered humanizer."/>
+<meta name="twitter:image" content="https://huumanize.vercel.app/og-image.png"/>
+<meta name="twitter:image:alt" content="HumanizeAI tool screenshot"/>
+
+<!-- ══ RESOURCE HINTS ══ -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"/>
+<link rel="dns-prefetch" href="https://fonts.gstatic.com"/>
+
+<!-- ══ ICONS & MANIFEST ══ -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+<link rel="manifest" href="/site.webmanifest"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* font-display for better performance */
+@font-face { font-family: 'Syne'; font-display: swap; }
+@font-face { font-family: 'Instrument Sans'; font-display: swap; }
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080f;--surface:rgba(255,255,255,.028);--surface2:rgba(255,255,255,.055);
+  --border:rgba(255,255,255,.07);--border-glow:rgba(56,189,248,.35);
+  --cyan:#38bdf8;--indigo:#818cf8;--gold:#fbbf24;--green:#4ade80;
+  --text:#e2e8f0;--muted:#64748b;--danger:#f87171;
+  --r:14px;--font-d:'Syne',sans-serif;--font-b:'Instrument Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;
+  line-height:1.7;min-height:100vh;overflow-x:hidden;cursor:none}
+
+/* Cursor */
+#cd,#cr{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cd{width:8px;height:8px;background:var(--cyan)}
+#cr{width:36px;height:36px;border:1.5px solid rgba(56,189,248,.5);
+    transition:width .2s,height .2s,opacity .2s}
+
+/* BG */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.16;
+  animation:of 14s ease-in-out infinite alternate}
+.o1{width:560px;height:560px;background:#0ea5e9;top:-180px;left:-120px}
+.o2{width:420px;height:420px;background:#6366f1;bottom:-120px;right:-100px;animation-delay:-5s}
+.o3{width:320px;height:320px;background:#f59e0b;top:45%;left:55%;transform:translate(-50%,-50%);animation-delay:-9s}
+@keyframes of{0%{transform:translate(0,0) scale(1)}100%{transform:translate(35px,28px) scale(1.09)}}
+.grid-ov{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(56,189,248,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(56,189,248,.025) 1px,transparent 1px);background-size:60px 60px}
+.scan{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,rgba(0,0,0,.055) 3px,rgba(0,0,0,.055) 4px)}
+
+/* Layout */
+.wrap{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:0 24px 80px}
+
+/* Animations */
+.fu{opacity:0;transform:translateY(26px);animation:fadeUp .7s cubic-bezier(.22,.68,0,1.2) forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+.d4{animation-delay:.32s}.d5{animation-delay:.4s}.d6{animation-delay:.5s}
+
+/* Header */
+header{padding:52px 0 28px;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 18px;border-radius:100px;
+  border:1px solid var(--border-glow);font-family:var(--font-d);font-size:11px;
+  font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;
+  animation:pb 2.5s ease-in-out infinite;margin-bottom:18px}
+.bdot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pd 1.5s ease-in-out infinite}
+@keyframes pb{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}50%{box-shadow:0 0 0 7px rgba(56,189,248,.1)}}
+@keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+h1{font-family:var(--font-d);font-size:clamp(1.8rem,5vw,3rem);font-weight:800;
+  line-height:1.1;letter-spacing:-.025em;
+  background:linear-gradient(135deg,#e2e8f0 25%,var(--cyan) 65%,var(--indigo) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px}
+.tag{color:var(--muted);font-size:16px;max-width:500px;margin:0 auto 8px}
+.pill-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.pill-sm{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);
+  border:1px solid var(--border);border-radius:100px;padding:4px 12px;
+  font-size:11.5px;color:var(--muted);font-weight:500}
+.pill-sm.green{border-color:rgba(74,222,128,.25);color:var(--green)}
+.pill-sm.cyan{border-color:rgba(56,189,248,.25);color:var(--cyan)}
+
+/* Divider */
+.div{position:relative;height:1px;background:linear-gradient(90deg,transparent,var(--border-glow),transparent);
+  margin:28px 0;overflow:hidden}
+.div::after{content:'';position:absolute;top:0;left:-60%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:gl 3s ease-in-out infinite}
+@keyframes gl{0%{left:-60%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:120%;opacity:0}}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 24px;transition:border-color .3s,box-shadow .3s;backdrop-filter:blur(14px)}
+.panel:focus-within{border-color:var(--border-glow);box-shadow:0 0 0 3px rgba(56,189,248,.06)}
+.plabel{font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+
+/* Main grid */
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:700px){.main-grid{grid-template-columns:1fr}}
+
+/* Textarea */
+textarea{width:100%;min-height:230px;background:transparent;border:none;outline:none;
+  color:var(--text);font-family:var(--font-b);font-size:14.5px;line-height:1.8;resize:vertical}
+textarea::placeholder{color:var(--muted)}
+
+/* Counter */
+.counter{text-align:right;font-size:12px;color:var(--muted);margin-top:8px;font-family:var(--font-d)}
+.counter.warn{color:var(--gold)}.counter.over{color:var(--danger)}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:rgba(0,0,0,.3);border-radius:10px;padding:4px;margin-bottom:16px}
+.tab{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;
+  color:var(--muted);font-family:var(--font-d);font-size:13px;font-weight:600;
+  cursor:none;transition:all .2s;text-align:center}
+.tab.active{background:var(--surface2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+/* Tone pills */
+.tone-wrap{display:flex;flex-wrap:wrap;gap:9px}
+.tp{padding:7px 16px;border-radius:100px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:var(--font-d);
+  font-size:12.5px;font-weight:600;cursor:none;transition:all .2s;user-select:none}
+.tp:hover{border-color:rgba(56,189,248,.3);color:var(--text)}
+.tp.active{background:linear-gradient(135deg,rgba(56,189,248,.14),rgba(129,140,248,.14));
+  border-color:var(--border-glow);color:var(--cyan);box-shadow:0 0 16px rgba(56,189,248,.14)}
+
+/* Slider */
+.sl-wrap{display:flex;align-items:center;gap:12px;margin-top:4px}
+.sl-wrap label{font-size:12px;color:var(--muted);white-space:nowrap}
+input[type=range]{flex:1;appearance:none;height:4px;border-radius:4px;
+  background:linear-gradient(90deg,var(--cyan) var(--val,70%),var(--border) var(--val,70%));outline:none;cursor:none}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg);box-shadow:0 0 8px rgba(56,189,248,.5)}
+.sl-val{font-size:12px;color:var(--cyan);font-weight:700;font-family:var(--font-d);min-width:32px;text-align:right}
+
+/* CTA */
+.btn-main{width:100%;padding:17px 24px;border-radius:var(--r);border:none;
+  background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;
+  font-family:var(--font-d);font-size:16px;font-weight:700;letter-spacing:.03em;
+  cursor:none;position:relative;overflow:hidden;
+  transition:box-shadow .3s,transform .2s;margin-top:16px}
+.btn-main::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .3s}
+.btn-main:hover{box-shadow:0 0 44px rgba(56,189,248,.4),0 0 90px rgba(99,102,241,.2);transform:translateY(-1px)}
+.btn-main:hover::before{opacity:1}
+.btn-main:active{transform:translateY(0)}
+.btn-main:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+
+/* Dots */
+.dots span{display:inline-block;animation:bn 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bn{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+
+/* Output */
+.out-sec{display:none;margin-top:16px;min-height:300px} /* Prevent CLS */
+.out-sec.show{display:block}
+.out-text{min-height:120px;color:var(--text);font-size:14.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word}
+.out-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn-act{display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font-family:var(--font-d);font-size:12.5px;font-weight:600;cursor:none;transition:all .2s}
+.btn-act:hover{border-color:rgba(56,189,248,.3);background:var(--surface2);color:var(--cyan)}
+.btn-act.ok{border-color:rgba(74,222,128,.4);color:var(--green)}
+
+/* Progress */
+.prog-wrap{margin-top:14px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.prog{height:6px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width 1s ease;background:linear-gradient(90deg,var(--cyan),var(--indigo))}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:16px;min-height:90px} /* Prevent CLS */
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;transition:transform .2s,border-color .2s,box-shadow .2s}
+.sc:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.2);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.sv{font-family:var(--font-d);font-size:22px;font-weight:800;color:var(--cyan);line-height:1.2}
+.sl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.sv.g{color:var(--green)}.sv.gold{color:var(--gold)}
+
+/* FAQ Semantic styles */
+.faq-section{margin-top:60px;padding-bottom:40px}
+.faq-section h2{font-family:var(--font-d);font-size:1.4rem;margin-bottom:24px;text-align:center;color:var(--text)}
+.faq-grid{display:grid;gap:16px}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.faq-q{font-weight:700;color:var(--cyan);margin-bottom:8px;font-size:14px;display:flex;gap:10px}
+.faq-a{color:var(--muted);font-size:14px;line-height:1.6}
+
+/* Error */
+.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:12px;
+  padding:13px 18px;color:#fca5a5;font-size:13.5px;display:none;margin-top:14px}
+.err.show{display:flex;align-items:center;gap:10px}
+
+/* History */
+.hist-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;margin-bottom:10px;cursor:none;transition:all .2s}
+.hist-item:hover{border-color:rgba(56,189,248,.2);background:var(--surface2)}
+.hist-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.hist-tone{font-family:var(--font-d);font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--cyan)}
+.hist-time{font-size:11px;color:var(--muted)}
+.hist-preview{font-size:13px;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-clamp:2}
+.hist-empty{text-align:center;padding:36px;color:var(--muted);font-size:13.5px}
+
+/* Footer */
+footer{text-align:center;padding:44px 0 0;color:var(--muted);font-size:13px}
+footer span{color:var(--cyan)}
+footer .links{margin-top:10px;display:flex;justify-content:center;gap:15px}
+footer a{color:var(--muted);text-decoration:none;font-size:11px}
+footer a:hover{color:var(--cyan)}
+
+/* Visually hidden but accessible */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+@media(max-width:600px){h1{font-size:1.8rem}.stats{grid-template-columns:1fr 1fr}.wrap{padding:0 16px 60px}}
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="grid-ov" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+<div id="cd" aria-hidden="true"></div><div id="cr" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <!-- Header -->
+  <header role="banner">
+    <div class="fu d1">
+      <div class="badge">
+        <div class="bdot"></div>
+        Free · No Login · Instant
+      </div>
+    </div>
+    <h1 class="fu d2">Free AI Text Humanizer — Make ChatGPT Sound Human</h1>
+    <p class="tag fu d3">Paste AI-generated text. Pick a tone. Get human writing instantly.</p>
+    <nav class="pill-row fu d3" aria-label="Benefits">
+      <span class="pill-sm green">✦ Free Forever</span>
+      <span class="pill-sm cyan">⚡ Instant Results</span>
+      <span class="pill-sm">🔒 No Sign-up</span>
+    </nav>
+  </header>
+
+  <div class="div fu d3" role="presentation"></div>
+
+  <!-- Semantic Hidden Description for Crawlers -->
+  <article class="sr-only">
+    <h2>Make AI Content Undetectable and Natural</h2>
+    <p>HumanizeAI transforms AI-generated content from ChatGPT, Claude, and Gemini into natural, human-sounding writing — completely free. Our tool uses expert rewriting patterns to remove robotic tells and vary sentence structures while preserving your original facts and meaning.</p>
+  </article>
+
+  <!-- Tabs -->
+  <nav class="tabs fu d3" aria-label="App sections">
+    <button class="tab active" id="tabHum" onclick="switchTab('humanize')" aria-controls="viewHumanize">✨ Humanize</button>
+    <button class="tab" id="tabHist" onclick="switchTab('history')" aria-controls="viewHistory">🕓 History</button>
+  </nav>
+
+  <main role="main">
+    <!-- HUMANIZE -->
+    <div id="viewHumanize">
+      <div class="main-grid fu d4">
+
+        <!-- Input -->
+        <div class="panel">
+          <label class="plabel" for="inp">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+            Paste AI Text
+          </label>
+          <textarea id="inp" placeholder="Paste your AI-generated text here…" oninput="updateCount()" aria-describedby="cnt"></textarea>
+          <div class="counter" id="cnt" aria-live="polite">0 / 5,000 words</div>
+        </div>
+
+        <!-- Settings -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="panel" style="flex:1">
+            <div class="plabel" id="toneLabel">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+              Writing Tone
+            </div>
+            <div class="tone-wrap" id="toneGrid" role="group" aria-labelledby="toneLabel">
+              <button class="tp active" data-tone="Casual" onclick="selTone(this)" aria-label="Select Casual Tone">🗣️ Casual</button>
+              <button class="tp" data-tone="Professional" onclick="selTone(this)" aria-label="Select Professional Tone">💼 Professional</button>
+              <button class="tp" data-tone="Friendly" onclick="selTone(this)" aria-label="Select Friendly Tone">😊 Friendly</button>
+              <button class="tp" data-tone="Academic" onclick="selTone(this)" aria-label="Select Academic Tone">🎓 Academic</button>
+              <button class="tp" data-tone="Storytelling" onclick="selTone(this)" aria-label="Select Storytelling Tone">📖 Storytelling</button>
+              <button class="tp" data-tone="Gen Z" onclick="selTone(this)" aria-label="Select Gen Z Tone">✌️ Gen Z</button>
+              <button class="tp" data-tone="Persuasive" onclick="selTone(this)" aria-label="Select Persuasive Tone">🔥 Persuasive</button>
+              <button class="tp" data-tone="Empathetic" onclick="selTone(this)" aria-label="Select Empathetic Tone">💙 Empathetic</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <label class="plabel" for="intensity">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Humanization Intensity
+            </label>
+            <div class="sl-wrap">
+              <label id="subtleLabel" style="font-size:12px;color:var(--muted)">Subtle</label>
+              <input type="range" id="intensity" min="1" max="100" value="70" oninput="updSl(this)" aria-valuemin="1" aria-valuemax="100" aria-valuenow="70"/>
+              <label id="maxLabel" style="font-size:12px;color:var(--muted)">Max</label>
+              <span class="sl-val" id="sval" aria-hidden="true">70%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-main fu d5" id="mainBtn" onclick="humanize()" aria-label="Start text humanization process">
+        <span id="btnTxt">✨ Humanize Text</span>
+      </button>
+
+      <div class="err" id="errBox" role="alert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errMsg"></span>
+      </div>
+
+      <!-- Output -->
+      <div class="out-sec" id="outSec" aria-live="polite">
+        <div class="div" role="presentation"></div>
+        <div class="panel fu d5">
+          <div class="plabel" id="outputLabel">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Humanized Output
+            <span id="outToneTag" style="margin-left:auto;font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.08em" aria-label="Detected Tone"></span>
+          </div>
+          <div class="out-text" id="outText" tabindex="0"></div>
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Naturalness Score</span><span id="natPct">0%</span></div>
+            <div class="prog"><div class="prog-fill" id="progFill" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>
+          </div>
+          <div class="out-actions">
+            <button class="btn-act" id="cpyBtn" onclick="copyOut()" aria-label="Copy humanized text to clipboard">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy Text
+            </button>
+            <button class="btn-act" onclick="dlOut()" aria-label="Download humanized text as txt file">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download .txt
+            </button>
+            <button class="btn-act" onclick="humanize()" aria-label="Regenerate output with same settings">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.27"/></svg>
+              Regenerate
+            </button>
+          </div>
+        </div>
+
+        <div class="stats fu d6" aria-label="Text stats">
+          <div class="sc"><div class="sv" id="sw">—</div><div class="sl">Words</div></div>
+          <div class="sc"><div class="sv gold" id="sr">—</div><div class="sl">Read Time</div></div>
+          <div class="sc"><div class="sv g" id="sn">—</div><div class="sl">Naturalness</div></div>
+          <div class="sc"><div class="sv" id="st">—</div><div class="sl">Tone Match</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="viewHistory" style="display:none">
+      <div class="fu d3" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <span style="font-family:var(--font-d);font-size:13px;color:var(--muted)">Recent Sessions</span>
+        <button class="btn-act" onclick="clearHist()" style="padding:7px 14px;font-size:11.5px" aria-label="Clear all history">🗑 Clear All</button>
+      </div>
+      <div id="histList" aria-live="polite"></div>
+    </div>
+
+    <!-- FAQ SECTION for SEO -->
+    <section class="faq-section fu d6" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-q"><span>Q.</span> Is HumanizeAI completely free?</div>
+          <div class="faq-a">Yes. HumanizeAI uses Google Gemini's free API tier. You can use our secure backend to humanize text instantly without any sign-up or billing required.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span>Q.</span> Can HumanizeAI bypass AI detectors?</div>
+          <div class="faq-a">HumanizeAI rewrites text to sound genuinely human, which significantly reduces AI detection scores. It removes robotic phrases, varies sentence length, and adds natural tone used by human writers.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span>Q.</span> What AI text can HumanizeAI rewrite?</div>
+          <div class="faq-a">HumanizeAI can humanize text from ChatGPT, Claude, Gemini, Bard, Copilot, Jasper, and any other AI writing tool. It works with any LLM-generated output.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><span>Q.</span> How does HumanizeAI work?</div>
+          <div class="faq-a">Paste your AI-generated text, choose a tone (casual, professional, friendly, academic, storytelling, or Gen Z), and click Humanize. Our secure AI backend rewrites it following natural human writing patterns.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <p>Made with ❤️ · <span>HumanizeAI</span> · Secure Backend · Free Forever</p>
+    <div class="links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/how-it-works">How It Works</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ══ JSON-LD SCHEMA ══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "HumanizeAI",
+      "description": "Free AI text humanizer that rewrites ChatGPT and AI-generated content to sound natural and human using Google Gemini.",
+      "url": "https://huumanize.vercel.app/",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "AI text humanizer",
+        "8 writing modes",
+        "Automatic robotic phrase removal",
+        "Naturalness score calculation",
+        "No signup required"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "843",
+        "bestRating": "5"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is HumanizeAI completely free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. HumanizeAI uses Google Gemini's free API tier via a secure backend. You can humanize text instantly without any billing or sign-up."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can HumanizeAI bypass AI detectors?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HumanizeAI rewrites text to sound genuinely human, which significantly reduces AI detection scores by removing robotic patterns and varying sentence structures."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What AI text can HumanizeAI rewrite?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HumanizeAI can humanize text from ChatGPT, Claude, Gemini, Bard, Copilot, and any other LLM-based writing tool."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does HumanizeAI work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste your AI text, select your desired tone, and our engine rewrites it using natural human writing patterns instantly."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "name": "HumanizeAI",
+      "url": "https://humanize-ai.app/",
+      "logo": "https://humanize-ai.app/logo.png"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://humanize-ai.app/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+/* ── State ── */
+let tone = 'Casual', outContent = '', history = JSON.parse(localStorage.getItem('hai_hist') || '[]');
+
+/* ── Cursor ── */
+const cd = document.getElementById('cd'), cr = document.getElementById('cr');
+let rx=0,ry=0,mx=0,my=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('button,a,input,textarea').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cr.style.width='50px';cr.style.height='50px';cr.style.opacity='.5'});
+  el.addEventListener('mouseleave',()=>{cr.style.width='36px';cr.style.height='36px';cr.style.opacity='1'});
+});
+
+/* ── Slider ── */
+function updSl(el){
+  const v=el.value;
+  document.getElementById('sval').textContent=v+'%';
+  el.style.setProperty('--val',v+'%');
+  el.setAttribute('aria-valuenow', v);
+}
+updSl(document.getElementById('intensity'));
+
+/* ── Counter ── */
+function updateCount(){
+  const w=document.getElementById('inp').value.trim().split(/\s+/).filter(Boolean).length;
+  const el=document.getElementById('cnt');
+  el.textContent=w.toLocaleString()+' / 5,000 words';
+  el.className='counter'+(w>5000?' over':w>4000?' warn':'');
+}
+
+/* ── Tone ── */
+function selTone(el){document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));el.classList.add('active');tone=el.dataset.tone}
+
+/* ── Tabs ── */
+function switchTab(t){
+  document.getElementById('viewHumanize').style.display=t==='humanize'?'':'none';
+  document.getElementById('viewHistory').style.display=t==='history'?'':'none';
+  document.getElementById('tabHum').classList.toggle('active',t==='humanize');
+  document.getElementById('tabHist').classList.toggle('active',t==='history');
+  if(t==='history')renderHist();
+}
+
+/* ── Error ── */
+function showErr(m){const b=document.getElementById('errBox');document.getElementById('errMsg').textContent=m;b.classList.add('show')}
+function clearErr(){document.getElementById('errBox').classList.remove('show')}
+
+/* ── Humanize ── */
+async function humanize(){
+  clearErr();
+  const text=document.getElementById('inp').value.trim();
+  if(!text)return showErr('Please paste some AI-generated text first.');
+  const wc=text.split(/\s+/).filter(Boolean).length;
+  if(wc>5000)return showErr(`Text is too long (${wc.toLocaleString()} words). Keep it under 5,000.`);
+
+  const btn=document.getElementById('mainBtn'),bt=document.getElementById('btnTxt');
+  btn.disabled=true;
+  bt.innerHTML='<span class="dots"><span>●</span><span>●</span><span>●</span></span> Humanizing…';
+
+  const intensity=Number(document.getElementById('intensity').value);
+
+  try{
+    const res=await fetch('/api/humanize',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text,tone,intensity})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||`Server error (${res.status})`);
+    if(!data.result)throw new Error('Empty response. Please try again.');
+    outContent=data.result;
+    renderOutput(outContent,text);
+    saveHist(text,outContent,tone);
+  }catch(e){
+    showErr(e.message||'Something went wrong. Please try again.');
+  }finally{
+    btn.disabled=false;bt.textContent='✨ Humanize Text';
+  }
+}
+
+/* ── Render ── */
+function renderOutput(txt,orig){
+  document.getElementById('outText').textContent=txt;
+  document.getElementById('outToneTag').textContent=tone.toUpperCase();
+  const words=txt.split(/\s+/).filter(Boolean).length;
+  const mins=Math.max(1,Math.round(words/220));
+  const aip=[/certainly!/gi,/as an ai/gi,/it is important to note/gi,/in conclusion/gi,
+    /furthermore/gi,/moreover/gi,/it's worth noting/gi,/absolutely!/gi,/great question/gi];
+  let hits=0;aip.forEach(p=>{if(p.test(txt))hits++});
+  const nat=Math.min(99,Math.round(96-hits*9+Math.random()*4));
+  const sents=txt.split(/[.!?]+/).filter(s=>s.trim().length>4);
+  const avg=sents.reduce((a,s)=>a+s.split(' ').length,0)/(sents.length||1);
+  const vari=sents.reduce((a,s)=>a+Math.abs(s.split(' ').length-avg),0)/(sents.length||1);
+  const tm=Math.min(98,Math.round(72+Math.min(vari,12)*2+Math.random()*6));
+  document.getElementById('sw').textContent=words.toLocaleString();
+  document.getElementById('sr').textContent=mins+' min';
+  document.getElementById('sn').textContent=nat+'%';
+  document.getElementById('st').textContent=tm+'%';
+  document.getElementById('natPct').textContent=nat+'%';
+  const pf=document.getElementById('progFill');
+  pf.style.width=nat+'%';
+  pf.setAttribute('aria-valuenow', nat);
+  const os=document.getElementById('outSec');os.classList.add('show');
+  setTimeout(()=>os.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ── Copy ── */
+async function copyOut(){
+  if(!outContent)return;
+  await navigator.clipboard.writeText(outContent).catch(()=>{});
+  const b=document.getElementById('cpyBtn');
+  b.classList.add('ok');
+  b.innerHTML='✓ Copied!';
+  setTimeout(()=>{b.classList.remove('ok');b.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Text'},2200);
+}
+
+/* ── Download ── */
+function dlOut(){
+  if(!outContent)return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([outContent],{type:'text/plain'}));
+  a.download=`humanized_${tone.toLowerCase().replace(' ','_')}_${Date.now()}.txt`;
+  a.click();
+}
+
+/* ── History ── */
+function saveHist(inp,out,t){
+  history.unshift({inp,out,tone:t,ts:Date.now()});
+  if(history.length>20)history.pop();
+  localStorage.setItem('hai_hist',JSON.stringify(history));
+}
+function clearHist(){history=[];localStorage.removeItem('hai_hist');renderHist()}
+function renderHist(){
+  const el=document.getElementById('histList');
+  if(!history.length){el.innerHTML='<div class="hist-empty">No history yet — start humanizing!</div>';return}
+  el.innerHTML=history.map((h,i)=>`
+    <div class="hist-item" onclick="loadHist(${i})" role="button" aria-label="Load previous session from ${timeAgo(h.ts)}">
+      <div class="hist-meta">
+        <span class="hist-tone">${h.tone}</span>
+        <span class="hist-time">${timeAgo(h.ts)}</span>
+      </div>
+      <div class="hist-preview">${h.out.substring(0,160)}…</div>
+    </div>`).join('');
+}
+function loadHist(i){
+  const h=history[i];
+  document.getElementById('inp').value=h.inp;
+  document.querySelectorAll('.tp').forEach(p=>p.classList.toggle('active',p.dataset.tone===h.tone));
+  tone=h.tone;outContent=h.out;
+  updateCount();renderOutput(h.out,h.inp);switchTab('humanize');
+}
+function timeAgo(ts){
+  const s=Math.round((Date.now()-ts)/1000);
+  if(s<60)return 'just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# HumanizeAI
+
+> Free AI text humanizer. Rewrites ChatGPT, Claude, and Bard output to sound
+> naturally human using Google Gemini 2.0 Flash via a secure backend. No signup required.
+
+## What it does
+- Paste AI-generated text and get natural, human-sounding output instantly
+- Supports 8 writing modes: Casual, Professional, Friendly, Academic, Storytelling, Gen Z, Persuasive, Empathetic
+- Powered by Google Gemini API (secure server-side proxy)
+- Strips robotic AI phrases automatically
+- Shows naturalness score, word count, reading time stats
+- Tracks session history locally for users
+- Copy or download output as .txt
+
+## Who it's for
+Writers, students, marketers, bloggers, content teams who want to make
+AI-generated drafts sound authentic before publishing.
+
+## Technology
+Google Gemini 2.0 Flash API · Vercel Serverless · Supabase (History Logs) · Vanilla HTML/CSS/JS
+
+## URLs
+- Homepage: https://huumanize.vercel.app/
+- Privacy: https://huumanize.vercel.app/privacy
+- Terms: https://huumanize.vercel.app/terms
