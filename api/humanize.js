@@ -3,10 +3,6 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-
 const TONE_DESC = {
   Casual:        'relaxed everyday language like texting a close friend',
   Professional:  'polished formal language suitable for business communication',
@@ -28,6 +24,10 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST')   return res.status(405).json({ error: 'Method not allowed' });
 
   const { text, tone = 'Casual', intensity = 70 } = req.body || {};
+
+  const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
   if (!text || typeof text !== 'string' || text.trim().length < 10)
     return res.status(400).json({ error: 'Please provide at least 10 characters of text.' });
