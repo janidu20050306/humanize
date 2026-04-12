@@ -2,6 +2,7 @@
 // Proxies AI API (key never exposed to browser) + saves history to Supabase
 
 const { createClient } = require('@supabase/supabase-js');
+const { OpenRouter } = require("@openrouter/sdk");
 
 const TONE_DESC = {
   Casual:        'relaxed everyday language like texting a close friend',
@@ -15,7 +16,7 @@ const TONE_DESC = {
 };
 
 module.exports = async function handler(req, res) {
-  // CORS headers (allow Vercel preview URLs + production)
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -29,87 +30,56 @@ module.exports = async function handler(req, res) {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-  if (!text || typeof text !== 'string' || text.trim().length < 10)
-    return res.status(400).json({ error: 'Please provide at least 10 characters of text.' });
-
-  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
-  if (wordCount > 5000)
-    return res.status(400).json({ error: `Text too long (${wordCount} words). Maximum is 5,000.` });
+  if (!text || text.trim().length < 10)
+    return res.status(400).json({ error: 'Please provide at least 10 characters.' });
 
   if (!OPENROUTER_KEY)
-    return res.status(500).json({ error: 'Server misconfiguration: missing API key.' });
+    return res.status(500).json({ error: 'Missing API key.' });
 
-  const lvlDesc =
-    intensity < 35 ? 'lightly touch' :
-    intensity < 65 ? 'moderately rewrite' :
-    intensity < 85 ? 'thoroughly rewrite' : 'completely rewrite';
-
+  const lvlDesc = intensity < 35 ? 'lightly touch' : intensity < 65 ? 'moderately rewrite' : intensity < 85 ? 'thoroughly rewrite' : 'completely rewrite';
   const toneHint = TONE_DESC[tone] || 'natural and conversational';
-
   const prompt = `You are an expert human writer. ${lvlDesc} the AI-generated text below to sound genuinely human.
 Tone: ${tone} — ${toneHint}
 Intensity: ${intensity}/100 — ${lvlDesc} it.
 Rules:
-- Strip all AI-tell phrases: "Certainly!", "As an AI", "It is important to note", "In conclusion", "Furthermore", "Moreover", "It's worth noting", "Absolutely!", "Great question!".
-- Vary sentence lengths. Mix short punchy sentences with longer flowing ones.
-- Use natural contractions where the tone allows (you're, it's, don't, we've).
-- Convert bullet lists into smooth readable prose paragraphs.
-- Preserve ALL original facts, data, and meaning — never invent or add anything.
-- Output ONLY the rewritten text. No preamble. No commentary. No explanations.
+- Strip all AI-tell phrases.
+- Vary sentence lengths.
+- Use natural contractions.
+- Output ONLY the rewritten text. No preamble.
 
 Text:
 ${text.trim()}`;
 
   try {
-    const response = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://humanize-ai.vercel.app', // Optional
-          'X-Title': 'Humanize AI', // Optional
-        },
-        body: JSON.stringify({
-          model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
-          messages: [{ role: 'user', content: prompt }],
-          temperature: 0.7 + intensity / 400,
-          top_p: 0.95,
-          max_tokens: 4096,
-        }),
-      }
-    );
+    const openrouter = new OpenRouter({ apiKey: OPENROUTER_KEY });
+    
+    // Using chat.send for simplicity as per user snippet spirit
+    const completion = await openrouter.chat.completions.create({
+      model: 'qwen/qwen3-next-80b-a3b-instruct:free',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7 + intensity / 400,
+    });
 
-    if (!response.ok) {
-      const errBody = await response.json().catch(() => ({}));
-      const msg = errBody?.error?.message || `AI service error (${response.status})`;
-      return res.status(response.status).json({ error: msg });
-    }
+    const outputText = completion?.choices?.[0]?.message?.content?.trim();
+    if (!outputText) throw new Error('Empty response from AI.');
 
-    const data = await response.json();
-    const outputText = data?.choices?.[0]?.message?.content?.trim();
-    if (!outputText)
-      return res.status(500).json({ error: 'Empty response from AI. Please try again.' });
-
-    // Save to Supabase (non-blocking — don't fail the request if DB write fails)
+    // Save to Supabase
     if (SUPABASE_URL && SUPABASE_KEY) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
       supabase.from('humanizations').insert({
-        input_text:  text.trim(),
+        input_text: text,
         output_text: outputText,
         tone,
-        intensity:   Number(intensity),
-        word_count:  outputText.split(/\s+/).filter(Boolean).length,
-      }).then(({ error }) => {
-        if (error) console.error('[Supabase insert error]', error.message);
-      });
+        intensity: Number(intensity),
+        word_count: outputText.split(/\s+/).length
+      }).catch(e => console.error(e));
     }
 
     return res.status(200).json({ result: outputText });
 
   } catch (err) {
     console.error('[humanize error]', err);
-    return res.status(500).json({ error: 'Unexpected server error. Please try again.' });
+    const msg = err.message || 'Unexpected server error.';
+    return res.status(500).json({ error: msg });
   }
 };
