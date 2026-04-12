@@ -3,7 +3,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const GEMINI_KEY   = process.env.GEMINI_API_KEY;
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
   if (wordCount > 5000)
     return res.status(400).json({ error: `Text too long (${wordCount} words). Maximum is 5,000.` });
 
-  if (!GEMINI_KEY)
+  if (!OPENROUTER_KEY)
     return res.status(500).json({ error: 'Server misconfiguration: missing API key.' });
 
   const lvlDesc =
@@ -61,30 +61,34 @@ Text:
 ${text.trim()}`;
 
   try {
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+    const response = await fetch(
+      'https://openrouter.ai/api/v1/chat/completions',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://humanize-ai.vercel.app', // Optional
+          'X-Title': 'Humanize AI', // Optional
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7 + intensity / 400,
-            topP: 0.95,
-            maxOutputTokens: 4096,
-          },
+          model: 'qwen/qwen3-next-80b-a3b-instruct:free',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7 + intensity / 400,
+          top_p: 0.95,
+          max_tokens: 4096,
         }),
       }
     );
 
-    if (!geminiRes.ok) {
-      const errBody = await geminiRes.json().catch(() => ({}));
-      const msg = errBody?.error?.message || `AI service error (${geminiRes.status})`;
-      return res.status(geminiRes.status).json({ error: msg });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `AI service error (${response.status})`;
+      return res.status(response.status).json({ error: msg });
     }
 
-    const data       = await geminiRes.json();
-    const outputText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    const data = await response.json();
+    const outputText = data?.choices?.[0]?.message?.content?.trim();
     if (!outputText)
       return res.status(500).json({ error: 'Empty response from AI. Please try again.' });
 
