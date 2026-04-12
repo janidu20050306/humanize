@@ -126,6 +126,11 @@ h1{font-family:var(--font-d);font-size:clamp(1.8rem,5vw,3rem);font-weight:800;
   background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:gl 3s ease-in-out infinite}
 @keyframes gl{0%{left:-60%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:120%;opacity:0}}
 
+/* Logo */
+.logo-wrap{margin-bottom:20px;display:flex;justify-content:center}
+.logo-img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(56,189,248,.4))}
+
+
 /* Panel */
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   padding:22px 24px;transition:border-color .3s,box-shadow .3s;backdrop-filter:blur(14px)}
@@ -270,6 +275,9 @@ footer a:hover{color:var(--cyan)}
         <div class="bdot"></div>
         Free · No Login · Instant
       </div>
+    </div>
+    <div class="logo-wrap fu d1">
+      <img src="logo.png" alt="HumanizeAI Logo" class="logo-img"/>
     </div>
     <h1 class="fu d2">Free AI Text Humanizer — Make ChatGPT Sound Human</h1>
     <p class="tag fu d3">Paste AI-generated text. Pick a tone. Get human writing instantly.</p>
