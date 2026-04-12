@@ -1,8 +1,8 @@
 // api/humanize.js — Vercel Serverless Function
-// Proxies AI API (key never exposed to browser) + saves history to Supabase
+// Proxies Groq API (Llama 3) + saves history to Supabase
 
 const { createClient } = require('@supabase/supabase-js');
-const { OpenRouter } = require("@openrouter/sdk");
+const Groq = require('groq-sdk');
 
 const TONE_DESC = {
   Casual:        'relaxed everyday language like texting a close friend',
@@ -26,44 +26,47 @@ module.exports = async function handler(req, res) {
 
   const { text, tone = 'Casual', intensity = 70 } = req.body || {};
 
-  const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
+  const GROQ_KEY = process.env.GROQ_API_KEY;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
   if (!text || text.trim().length < 10)
     return res.status(400).json({ error: 'Please provide at least 10 characters.' });
 
-  if (!OPENROUTER_KEY)
-    return res.status(500).json({ error: 'Missing API key.' });
+  if (!GROQ_KEY)
+    return res.status(500).json({ error: 'Missing Groq API key.' });
 
   const lvlDesc = intensity < 35 ? 'lightly touch' : intensity < 65 ? 'moderately rewrite' : intensity < 85 ? 'thoroughly rewrite' : 'completely rewrite';
   const toneHint = TONE_DESC[tone] || 'natural and conversational';
+  
   const prompt = `You are an expert human writer. ${lvlDesc} the AI-generated text below to sound genuinely human.
 Tone: ${tone} — ${toneHint}
 Intensity: ${intensity}/100 — ${lvlDesc} it.
 Rules:
-- Strip all AI-tell phrases.
+- Strip all AI-tell phrases: "Certainly!", "As an AI", "It is important to note", etc.
 - Vary sentence lengths.
 - Use natural contractions.
+- Preserve ALL original facts and meaning.
 - Output ONLY the rewritten text. No preamble.
 
 Text:
 ${text.trim()}`;
 
   try {
-    const openrouter = new OpenRouter({ apiKey: OPENROUTER_KEY });
-    
-    // Using chat.send for simplicity as per user snippet spirit
-    const completion = await openrouter.chat.completions.create({
-      model: 'nvidia/nemotron-3-super-120b-a12b:free',
-      messages: [{ role: 'user', content: prompt }],
+    const groq = new Groq({ apiKey: GROQ_KEY });
+
+    const MODEL = process.env.MODEL_NAME || 'llama-3.3-70b-versatile';
+    const completion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: MODEL,
       temperature: 0.7 + intensity / 400,
+      max_tokens: 4096,
     });
 
-    const outputText = completion?.choices?.[0]?.message?.content?.trim();
+    const outputText = completion.choices[0]?.message?.content?.trim();
     if (!outputText) throw new Error('Empty response from AI.');
 
-    // Save to Supabase
+    // Save to Supabase (non-blocking)
     if (SUPABASE_URL && SUPABASE_KEY) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
       supabase.from('humanizations').insert({
@@ -72,14 +75,15 @@ ${text.trim()}`;
         tone,
         intensity: Number(intensity),
         word_count: outputText.split(/\s+/).length
-      }).catch(e => console.error(e));
+      }).then(({ error }) => {
+        if (error) console.error('[Supabase Error]', error.message);
+      });
     }
 
     return res.status(200).json({ result: outputText });
 
   } catch (err) {
     console.error('[humanize error]', err);
-    const msg = err.message || 'Unexpected server error.';
-    return res.status(500).json({ error: msg });
+    return res.status(500).json({ error: err.message || 'Unexpected server error.' });
   }
 };
