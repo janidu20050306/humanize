@@ -19,10 +19,11 @@
 ## 🛠️ Tech Stack
 
 -   **Frontend**: Vanilla HTML5, CSS3 (Glassmorphism), and Modern Javascript.
--   **Backend**: Vercel Serverless Functions (Node.js).
--   **AI Engine**: OpenRouter API (Qwen & Gemini models).
+-   **Backend**: Vercel Serverless Functions.
+-   **AI Engine**: Groq API (Llama 3.3 70B Versatile).
 -   **Database**: Supabase (for persistent humanization logs).
--   **Monitoring**: Vercel Speed Insights & Google AdSense.
+-   **Monetization**: Integrated Adsterra High-Performance Scripts.
+
 
 ## 📦 Getting Started
 
