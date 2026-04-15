@@ -20,9 +20,9 @@
 
 
 <!-- ══ PRIMARY SEO META TAGS ══ -->
-<title>HumanizeAI — Free AI Text Humanizer | Make ChatGPT Text Sound Human</title>
-<meta name="description" content="Free AI text humanizer powered by advanced open models. Instantly rewrite ChatGPT, Claude & Bard text to sound natural, warm and human. No signup needed."/>
-<meta name="keywords" content="humanize AI text, AI to human text converter, make AI text undetectable, ChatGPT humanizer, bypass AI detection, free AI paraphraser, AI text rewriter"/>
+<title>HumanizeAI — Free AI Text Humanizer | Make AI Sound Human</title>
+<meta name="description" content="Instantly humanize ChatGPT, Claude, Gemini text. Bypass AI detectors with natural tones. 100% Free." />
+<meta name="keywords" content="ai humanizer, humanize ai text, bypass ai detector, make chatgpt sound human" />
 <meta name="author" content="HumanizeAI"/>
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
 <meta name="googlebot" content="index, follow"/>
@@ -769,6 +769,162 @@ function timeAgo(ts){
   if(s<86400)return Math.floor(s/3600)+'h ago';
   return Math.floor(s/86400)+'d ago';
 }
+</script>
+<!-- HumanizeAI Buddy Chatbot -->
+<div id="revenue-chatbot" style="position:fixed;bottom:20px;right:20px;z-index:10000;font-family:var(--font-b);">
+  <button id="chat-toggle-btn" onclick="toggleRevenueChat()" 
+    style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;padding:16px 24px;border-radius:50px;cursor:none;box-shadow:0 8px 25px rgba(102,126,234,0.5);font-weight:600;font-size:16px;display:flex;align-items:center;gap:10px;">
+    💬 Chat with HumanizeAI Buddy
+  </button>
+
+  <div id="chat-window" style="display:none;width:380px;height:560px;background:#ffffff;border-radius:18px;margin-top:12px;box-shadow:0 15px 40px rgba(0,0,0,0.3);overflow:hidden;flex-direction:column;border:1px solid rgba(0,0,0,0.1);">
+    <div style="background:#4f46e5;color:white;padding:16px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-d);">
+      <span>🤖 HumanizeAI Buddy</span>
+      <span onclick="toggleRevenueChat()" style="cursor:none;font-size:22px;padding:0 5px;">✕</span>
+    </div>
+    
+    <div id="chat-messages" style="flex:1;padding:16px;overflow-y:auto;background:#f8fafc;line-height:1.5;scrollbar-width:thin;"></div>
+    
+    <div style="padding:12px;border-top:1px solid #e2e8f0;display:flex;gap:8px;background:white;">
+      <input id="chat-input" placeholder="Paste text or ask anything..." 
+        style="flex:1;padding:14px;border:1px solid #cbd5e1;border-radius:9999px;outline:none;font-size:15px;cursor:none;color:#1e2937;">
+      <button id="chat-send-btn" onclick="sendRevenueMessage()" 
+        style="background:#4f46e5;color:white;border:none;padding:14px 26px;border-radius:9999px;font-weight:600;cursor:none;transition:0.2s;">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const REVENUE_API_KEY = "your_openrouter_api_key_here";
+const REVENUE_MODEL = "google/gemini-2.0-flash-exp";
+
+const SYSTEM_PROMPT = `You are "HumanizeAI Buddy" — a friendly, energetic, and helpful AI assistant for the free AI text humanizer tool at https://huumanize.vercel.app/.
+
+Your #1 job is to help users humanize their AI text while keeping them engaged on the site longer so they see more helpful content and ads.
+
+Core knowledge about the tool:
+- 100% free, no login, no payment
+- Paste any AI text (ChatGPT, Claude, Gemini, etc.)
+- Choose from 8 tones: Casual, Professional, Friendly, Academic, Storytelling, Gen Z, Persuasive, Empathetic
+- Shows Naturalness Score after humanizing
+- Users can copy, download, or regenerate output
+
+Revenue-focused behavior:
+- Always be warm, fun, and encouraging (use casual language, emojis, contractions like I'm, you're, it's)
+- Keep most replies short and actionable (2-5 sentences max)
+- Never write the full humanized version yourself — always direct users to paste their text into the actual tool on the site
+- Actively suggest actions that increase engagement:
+  - Try different tones
+  - Humanize the same text multiple times
+  - Check the Naturalness Score
+  - Read related blog posts (if you add a blog)
+  - Share the tool with friends
+  - Come back tomorrow for new features
+
+Conversation rules:
+- Start every conversation with energy: "Hey! Ready to make your AI text sound super natural? 🔥 What are you working on today?"
+- If user shares text or a problem, say: "Awesome! Paste that into the Humanize tool, try the [recommended tone], and tell me the Naturalness Score!"
+- Suggest next steps: "Want me to help you pick the best tone?" or "Try Gen Z tone for social media — it's fire! 🔥"
+- If conversation slows, ask engaging questions: "What kind of content are you creating?" or "Have you tried the Persuasive tone yet?"
+- If they ask unrelated questions, politely bring back to humanizing: "Cool question! While we're here, want help making some text sound more human?"
+- End many replies with a soft call-to-action that keeps them on the page.
+
+Be positive, helpful, and never pushy. Goal = make users love the tool and spend more time here.
+Current date: April 2026.`;
+
+async function sendRevenueMessage() {
+  const input = document.getElementById("chat-input");
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  addRevenueMessage("user", msg);
+  input.value = "";
+  
+  const thinkingId = "rev-msg-" + Date.now();
+  addRevenueMessage("bot", "Thinking...", thinkingId);
+
+  try {
+    const res = await fetch("https://openrouter.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${REVENUE_API_KEY}`,
+        "HTTP-Referer": "https://huumanize.vercel.app",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: REVENUE_MODEL,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: msg }
+        ],
+        temperature: 0.75
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.choices[0].message.content;
+
+    document.getElementById(thinkingId).textContent = reply;
+    const container = document.getElementById("chat-messages");
+    container.scrollTop = container.scrollHeight;
+  } catch (e) {
+    document.getElementById(thinkingId).textContent = "Oops! Try again in a second 😊";
+  }
+}
+
+function addRevenueMessage(sender, text, id) {
+  const container = document.getElementById("chat-messages");
+  const div = document.createElement("div");
+  if (id) div.id = id;
+  div.style.margin = "10px 0";
+  div.style.padding = "12px 16px";
+  div.style.borderRadius = "18px";
+  div.style.maxWidth = "85%";
+  div.style.fontSize = "14px";
+  
+  if (sender === "user") {
+    div.style.background = "#4f46e5";
+    div.style.color = "white";
+    div.style.marginLeft = "auto";
+    div.style.borderBottomRightRadius = "4px";
+  } else {
+    div.style.background = "#f1f5f9";
+    div.style.color = "#1e2937";
+    div.style.borderBottomLeftRadius = "4px";
+  }
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function toggleRevenueChat() {
+  const win = document.getElementById("chat-window");
+  const isOpen = win.style.display === "flex";
+  win.style.display = isOpen ? "none" : "flex";
+  if (!isOpen) {
+    document.getElementById("chat-input").focus();
+    if (document.getElementById("chat-messages").children.length === 0) {
+      addRevenueMessage("bot", "Hey! Ready to make your AI text sound super natural? 🔥 What are you working on today?");
+    }
+  }
+}
+
+// Custom cursor support for new elements
+setTimeout(() => {
+  if (typeof cr !== 'undefined') {
+    document.querySelectorAll('#revenue-chatbot button, #revenue-chatbot input, #revenue-chatbot span').forEach(el => {
+      el.addEventListener('mouseenter', () => { cr.style.width = '50px'; cr.style.height = '50px'; cr.style.opacity = '.5'; });
+      el.addEventListener('mouseleave', () => { cr.style.width = '36px'; cr.style.height = '36px'; cr.style.opacity = '1'; });
+    });
+  }
+}, 1000);
+
+// Auto-open after 12 seconds
+setTimeout(() => {
+  if (document.getElementById("chat-window").style.display !== "flex") {
+    toggleRevenueChat();
+  }
+}, 12000);
 </script>
 <!-- Vercel Speed Insights -->
 <script defer src="/_vercel/speed-insights/script.js"></script>
