@@ -22,7 +22,7 @@
 -   **Backend**: Vercel Serverless Functions.
 -   **AI Engine**: Groq API (Llama 3.3 70B Versatile).
 -   **Database**: Supabase (for persistent humanization logs).
--   **Monetization**: Integrated Adsterra High-Performance Scripts.
+
 
 
 ## 📦 Getting Started
